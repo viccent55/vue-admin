@@ -156,7 +156,7 @@ const desserts = ref([
           </teleport>
           <v-data-table
             :headers="headers"
-            :items="desserts"
+            :items="[...desserts, ...desserts]"
             item-value="name"
             :search="search"
           >

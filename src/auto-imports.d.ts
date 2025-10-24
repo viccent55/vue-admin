@@ -76,16 +76,20 @@ declare global {
   const useCssVars: typeof import('vue').useCssVars
   const useDisplay: typeof import('vuetify').useDisplay
   const useId: typeof import('vue').useId
+  const useKeepALiveNames: typeof import('./stores/keepAliveNames').useKeepALiveNames
   const useLayout: typeof import('vuetify').useLayout
   const useLocale: typeof import('vuetify').useLocale
   const useModel: typeof import('vue').useModel
   const useNotificationStore: typeof import('./stores/notification').useNotificationStore
+  const useRequestOldRoutes: typeof import('./stores/requestOldRoutes').useRequestOldRoutes
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useRtl: typeof import('vuetify').useRtl
   const useSlots: typeof import('vue').useSlots
+  const useStore: typeof import('./stores/index').useStore
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTheme: typeof import('vuetify').useTheme
+  const useUserInfo: typeof import('./stores/index').useUserInfo
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect

@@ -25,3 +25,7 @@ playwright-report/
 *.njsproj
 *.sln
 *.sw?
+auto-import.d.ts
+components.d.ts
+package-lock.json
+

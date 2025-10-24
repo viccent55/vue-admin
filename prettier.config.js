@@ -1,5 +1,12 @@
 /** @type {import("prettier").Config} */
 export default {
-  semi: false,
-  singleQuote: true,
+  semi: true,
+  singleQuote: false,
+  bracketSameLine: false,
+  htmlWhitespaceSensitivity: 'ignore',
+  vueIndentScriptAndStyle: true,
+  printWidth: 80,
+  tabWidth: 2,
+  trailingComma: 'es5',
+  singleAttributePerLine: true,
 }

@@ -1,16 +1,17 @@
 import { createApp } from 'vue'
-import type { Plugin } from 'vue'
-
 import App from './App.vue'
-import '@/assets/styles/index.css'
+import router from '@/routers'
+import pinia from '@/plugins/pinia'
+import vuetify from '@/plugins/vuetify'
+import echarts from '@/plugins/echarts'
+import { createMyLocalePlugin } from '@/plugins/i18n'
 
 const app = createApp(App)
 
-Object.values(
-  import.meta.glob<Plugin>('./plugins/*.ts', {
-    eager: true,
-    import: 'default',
-  }),
-).forEach((v) => app.use(v))
-
+// install in correct order
+app.use(pinia)
+app.use(router)
+app.use(vuetify)
+app.use(echarts)
+app.use(createMyLocalePlugin()) // ✅ now store is available
 app.mount('#app')

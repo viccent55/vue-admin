@@ -1,36 +1,48 @@
 <script setup lang="ts">
-import type { RouteRecordRaw } from 'vue-router'
+  import type { RouteRecordRaw } from "vue-router";
+  import { useLocale } from "@vuetify/v0";
 
-const { level = 0, item } = defineProps<{
-  level?: number
-  item: RouteRecordRaw
-}>()
-const visibleChildren = computed(() =>
-  item.children
-    ?.filter((child) => child.meta?.icon)
-    .sort((a, b) => (a.meta?.drawerIndex ?? 99) - (b.meta?.drawerIndex ?? 98)),
-)
-const visibleChildrenNum = computed(() => visibleChildren.value?.length || 0)
-const isItem = computed(() => !item.children || visibleChildrenNum.value <= 1)
-const title = toRef(() => item.meta?.title)
-const icon = toRef(() => item.meta?.icon)
-// @ts-expect-error unknown type mismatch
-const to = computed<RouteRecordRaw>(() => ({
-  name: item.name || visibleChildren.value?.[0]?.name,
-}))
+  const { level = 0, item } = defineProps<{
+    level?: number;
+    item: RouteRecordRaw;
+  }>();
+
+  const visibleChildren = computed(() =>
+    item.children?.filter((child) => !child.meta?.isHide)
+  );
+
+  const hasVisibleChildren = computed(
+    () => visibleChildren.value?.length || 0 > 0
+  );
+
+  const isGroup = computed(() => hasVisibleChildren.value);
+
+  const title = toRef(() => item.meta?.title as string);
+  const icon = toRef(() => item.meta?.icon as string);
+
+  const to = computed(() => {
+    // If it's a group and has a redirect, use it. Otherwise, use its own path.
+    if (isGroup.value) {
+      return { path: (item.redirect as string) || item.path };
+    }
+    // If it's a single item, use its path.
+    return { path: item.path };
+  });
+  const locale = useLocale();
 </script>
 
 <template>
-  <v-list-item
-    v-if="isItem && icon"
-    :to="to"
-    :prepend-icon="icon"
-    active-class="text-primary"
-    :title="title"
-  />
-  <v-list-group v-else-if="icon" :prepend-icon="icon" color="primary">
-    <template #activator="{ props: vProps }">
-      <v-list-item :title="title" v-bind="vProps" />
+  <v-list-group
+    v-if="isGroup"
+    :value="item.name"
+  >
+    <template #activator="{ props }">
+      <v-list-item
+        color="primary"
+        v-bind="props"
+        :prepend-icon="icon"
+        :title="locale.t(title)"
+      />
     </template>
     <AppDrawerItem
       v-for="child in visibleChildren"
@@ -39,4 +51,13 @@ const to = computed<RouteRecordRaw>(() => ({
       :level="level + 1"
     />
   </v-list-group>
+  <v-list-item
+    v-else
+    color="primary"
+    rounded="xl"
+    :prepend-icon="icon"
+    :title="locale.t(title)"
+    :to="to"
+    link
+  />
 </template>
