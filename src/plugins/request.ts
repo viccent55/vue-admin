@@ -40,7 +40,7 @@ service.interceptors.response.use(
         window.location.href = "/";
         Notify.error("登录状态已过期，请重新登录");
       }
-      return Promise.reject(service.interceptors.response);
+      return res;
     } else {
       return res;
     }

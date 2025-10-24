@@ -1,6 +1,7 @@
 import requst from "@/plugins/request";
 
 // login
-export function login(param: object): Promise<EmptyObjectType> {
-  return requst.post("/base/login", param);
+export async function login(param: object): Promise<EmptyObjectType> {
+  const res =  await requst.post("/base/login", param);
+  return res
 }

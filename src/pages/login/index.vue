@@ -4,6 +4,8 @@
   import { login } from "@/service/login";
   import useVariables from "@/composables/useVariables";
   import { Session } from "@/utils/storage";
+  import useSnackbar from "@/composables/useSnackbar";
+  import router from "@/routers";
 
   const state = reactive({
     loading: false,
@@ -27,16 +29,21 @@
   });
   const { locale, store } = useVariables();
   const formRef = ref();
+  const snackbar = useSnackbar();
 
   const handleLogin = async () => {
     if (!(await formRef.value?.validate())) return;
     state.loading = true;
     try {
       const response = await login(state.form);
+
       if (response.code === 0) {
         store.user = response.data.user;
         Session.set("token", response.data.token);
-        location.reload();
+        router.push("/dashboard");
+        snackbar.showSnackbar(response.msg, "success", "top center");
+      } else {
+        snackbar.showSnackbar(response.msg, "error", "top center");
       }
     } catch (e) {
       console.log(e);
