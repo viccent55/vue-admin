@@ -4,7 +4,9 @@ import qs from "qs";
 import { Notify } from "@/stores/notification";
 
 const service: AxiosInstance = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.PROD
+    ? import.meta.env.VITE_API_URL // your actual API domain
+    : "/api",
   timeout: 50000,
   headers: { "Content-Type": "application/json" },
   paramsSerializer: {
