@@ -22,8 +22,10 @@ export default defineFlatConfigs(
     rules: {
       'vue/valid-v-slot': ['error', { allowModifiers: true }], // allow vuetify slot modifier
       'vue/no-multiple-template-root': 'off', // nuxt allow it but plain vue don't
-      'vue/html-self-closing': ['error', { html: { void: 'any' } }], // not conflict with prettier
       '@typescript-eslint/no-explicit-any': 'off',
+       'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+
     },
   },
 )

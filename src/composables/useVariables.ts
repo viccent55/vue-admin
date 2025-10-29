@@ -5,7 +5,7 @@ const useVariables = () => {
   const route = useRoute();
   const router = useRouter();
   const locale = useLocale();
-
+  const { mobile } = useDisplay()
   const onCopy = async (text: string) => {
     if (navigator.clipboard && window.isSecureContext) {
       try {
@@ -43,6 +43,7 @@ const useVariables = () => {
     onCopy,
     debounce,
     locale,
+    mobile,
   };
 };
 export default useVariables;

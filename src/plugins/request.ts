@@ -20,8 +20,9 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config) => {
     // What to do before sending a request token
-    if (Session.get("token")) {
-      config.headers!["Authorization"] = `${Session.get("token")}`;
+    const token = Session.get("token");
+    if (token) {
+      config.headers!["x-token"] = `${token}`;
     }
     return config;
   },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { useToggle, useDark } from "@vueuse/core";
   import useVariables from "@/composables/useVariables";
-import { Session } from "@/utils/storage";
+  import { Session } from "@/utils/storage";
 
   const theme = useTheme();
   const { drawer } = storeToRefs(useAppStore());
@@ -31,9 +31,9 @@ import { Session } from "@/utils/storage";
     store.lang = en;
   };
   const onLogout = () => {
-    Session.clear()
-    location.reload()
-  }
+    Session.clear();
+    location.reload();
+  };
 </script>
 
 <template>
@@ -81,10 +81,11 @@ import { Session } from "@/utils/storage";
         color="primary"
         variant="elevated"
         append-icon="mdi-logout"
-        density="default"
+        size="small"
+        height="32px"
         @click="onLogout()"
       >
-        <span class="text-body-1">{{ locale.t("logout") }}</span>
+        <span class="text-body-2">{{ locale.t("logout") }}</span>
       </v-btn>
     </div>
   </v-app-bar>

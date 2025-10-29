@@ -56,7 +56,7 @@ const adminRoutes: Array<RouteRecordRaw> = [
         },
         children: [
           {
-            path: "/role",
+            path: "/administrator/role",
             name: "role",
             component: () => import("@/pages/administrator/role/index.vue"),
             meta: {
@@ -64,18 +64,18 @@ const adminRoutes: Array<RouteRecordRaw> = [
               isKeepAlive: true,
             },
           },
-          {
-            path: "/menu",
-            name: "menu",
-            component: () => import("@/pages/administrator/menu/index.vue"),
-            meta: {
-              title: "menu",
-              isKeepAlive: true,
-            },
-          },
+          // {
+          //   path: "/administrator/menu",
+          //   name: "menu",
+          //   component: () => import("@/pages/administrator/menu/index.vue"),
+          //   meta: {
+          //     title: "menu",
+          //     isKeepAlive: true,
+          //   },
+          // },
           {
             path: "/user",
-            name: "user",
+            name: "/administrator/user",
             component: () => import("@/pages/administrator/user/index.vue"),
             meta: {
               title: "user",
@@ -83,7 +83,7 @@ const adminRoutes: Array<RouteRecordRaw> = [
             },
           },
           {
-            path: "/api-management",
+            path: "/administrator/api-management",
             name: "api-management",
             component: () =>
               import("@/pages/administrator/api-management/index.vue"),
