@@ -86,6 +86,7 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
       },
+      allowedHosts: true,
     },
   };
 });
