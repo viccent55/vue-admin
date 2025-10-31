@@ -2,7 +2,7 @@
   import Table from "@/components/table/index.vue";
   import Dialog from "./dialog.vue";
   import useVariables from "@/composables/useVariables";
-  import { getApiList, deleteItem, apiGroup } from "@/service/sysapi";
+  import { getApiList, deleteItem, apiGroup } from "@/service/admin/sysapi";
   import useSnackbar from "@/composables/useSnackbar";
 
   const { locale } = useVariables();
@@ -112,7 +112,7 @@
     getDataTable();
   };
 
-  const openDialog = (key: string, item: EmptyObjectType) => {
+  const openDialog = (key: string, item: EmptyObjectType = {}) => {
     dialogRef.value.open(key, item);
   };
   const onDelete = async (item: EmptyObjectType) => {
@@ -144,6 +144,15 @@
     };
     getDataTable();
   };
+  const onSystem = (key: string, item: EmptyObjectType) => {
+    if (key === "add") {
+      openDialog(key);
+    } else if (key === "edit") {
+      openDialog(key, item);
+    } else if (key === "delete") {
+      onDelete(item);
+    }
+  };
   onMounted(() => {
     getApiGroups();
     getDataTable();
@@ -157,7 +166,7 @@
     >
       <v-row>
         <v-col
-          col="6"
+          cols="6"
           sm="6"
           md="4"
           lg="2"
@@ -171,7 +180,7 @@
           />
         </v-col>
         <v-col
-          col="6"
+          cols="6"
           sm="6"
           md="4"
           lg="2"
@@ -185,7 +194,7 @@
           />
         </v-col>
         <v-col
-          col="6"
+          cols="6"
           sm="6"
           md="4"
           lg="2"
@@ -200,7 +209,7 @@
           />
         </v-col>
         <v-col
-          col="6"
+          cols="6"
           sm="6"
           md="4"
           lg="2"
@@ -208,7 +217,7 @@
           <v-select
             v-model="state.table.config.method"
             :items="state.methods"
-            single-line
+            :label="locale.t('method')"
             item-title="label"
             item-value="value"
             hide-details="auto"
@@ -217,7 +226,7 @@
           />
         </v-col>
         <v-col
-          col="6"
+          cols="6"
           sm="12"
           md="6"
           lg="auto"
@@ -247,9 +256,7 @@
     <Table
       v-bind="state.table"
       :title="locale.t('apiManagement')"
-      @add="openDialog('add', {})"
-      @edit="(v) => openDialog('edit', v)"
-      @delete="onDelete"
+      @system="onSystem"
       @update:options="onUpdate"
       @permission="openMenuPermission"
     />

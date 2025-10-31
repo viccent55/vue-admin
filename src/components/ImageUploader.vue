@@ -96,7 +96,7 @@
       flat
     >
       <v-toolbar
-        color="primary"
+        color="secondary"
         title="Upload Image"
         density="compact"
       />
@@ -153,6 +153,10 @@
           Cancel
         </v-btn>
       </v-card-actions>
+      <overlay-loading
+        :loading="state.loading"
+        contained
+      ></overlay-loading>
     </v-card>
   </v-dialog>
 </template>

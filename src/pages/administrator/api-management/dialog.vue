@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import useVariables from "@/composables/useVariables";
-  import { createApi, updateApi } from "@/service/sysapi";
+  import { createApi, updateApi } from "@/service/admin/sysapi";
   import useSnackbar from "@/composables/useSnackbar";
 
   const props = defineProps({
@@ -103,7 +103,10 @@
     max-width="750px"
     :fullscreen="mobile"
   >
-    <v-card flat>
+    <v-card
+      flat
+      :loading="state.loading"
+    >
       <v-card-title>
         <div class="d-flex justify-space-between align-center">
           {{ locale.t(state.dialog.key) }}
@@ -191,6 +194,7 @@
         <v-btn
           color="primary"
           density="comfortable"
+          :loading="state.loading"
           @click="onSubmit"
         >
           {{ locale.t(state.dialog.confirmText) }}

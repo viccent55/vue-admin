@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import useVariables from "@/composables/useVariables";
-  import { createUser, updateUser } from "@/service/user";
+  import { createUser, updateUser } from "@/service/admin/user";
   import useSnackbar from "@/composables/useSnackbar";
   import { reactive } from "vue";
   import ImageUploader from "@/components/ImageUploader.vue";
@@ -42,7 +42,7 @@
           return locale.t("itMustBeAValidEmailAdress");
         },
       ],
-      authorityIds: [(v: string) => !!v || locale.t("fieldIsRequired")],
+      authorityIds: [(v: any[]) => v.length > 0 || locale.t("fieldIsRequired")],
       nickname: [(v: string) => !!v || locale.t("fieldIsRequired")],
     },
     loading: false,
@@ -73,10 +73,7 @@
     state.dialog.key = key;
 
     if (key == "add") {
-      state.form.headerImg = "";
-      nextTick(() => {
-        form.value.reset();
-      });
+      state.form.enable = 1;
     } else if (key == "edit") {
       Object.assign(state.form, item);
       state.form.authorityIds = item.authorities.map(
@@ -87,15 +84,19 @@
 
   const closeDialog = () => {
     state.dialog.isShowDialog = false;
-
-    emit("refresh");
+    form.value.reset();
+    state.form.headerImg = "";
   };
   const onSubmit = async () => {
-    if(!state.form.headerImg) {
-      return snackbar.showSnackbar(locale.t("pleaseUploadImage"), "error", "top");
-    }
     const { valid } = await form.value.validate();
     if (!valid) return;
+    if (!state.form.headerImg) {
+      return snackbar.showSnackbar(
+        locale.t("pleaseUploadImage"),
+        "error",
+        "top"
+      );
+    }
     try {
       state.loading = true;
       const request = {
@@ -108,8 +109,11 @@
           ? await createUser(request)
           : await updateUser(request);
       if (response.code == 0) {
-        snackbar.showSnackbar(locale.t("createSuccess", "success", "top"));
-        closeDialog();
+        snackbar.showSnackbar(
+          locale.t("createSuccess", "success", "top center")
+        );
+        state.dialog.isShowDialog = false;
+        emit("refresh");
       } else {
         snackbar.showSnackbar(response.msg, "error", "top");
       }
@@ -134,8 +138,12 @@
     scrollable
     max-width="750px"
     :fullscreen="mobile"
+    @after-leave="closeDialog"
   >
-    <v-card flat>
+    <v-card
+      flat
+      :loading="state.loading"
+    >
       <v-card-title>
         <div class="d-flex justify-space-between align-center">
           {{ locale.t(state.dialog.key) }}
@@ -156,7 +164,7 @@
                 {{ locale.t("username") }}
               </div>
               <v-text-field
-                v-model.number="state.form.userName"
+                v-model="state.form.userName"
                 :rules="state.rules.userName"
                 :placeholder="locale.t('username')"
                 variant="outlined"
@@ -189,7 +197,7 @@
                 {{ locale.t("nickname") }}
               </div>
               <v-text-field
-                v-model.number="state.form.nickName"
+                v-model="state.form.nickName"
                 :rules="state.rules.nickname"
                 :placeholder="locale.t('nickname')"
                 variant="outlined"
@@ -225,6 +233,7 @@
                     v-bind="props"
                     v-model="state.form.authorityIds"
                     :items="flatRoles"
+                    :rules="state.rules.authorityIds"
                     item-title="authorityName"
                     item-value="authorityId"
                     multiple
@@ -232,12 +241,14 @@
                     variant="outlined"
                     readonly
                     density="compact"
+                    @click="state.menu = true"
                   />
                 </template>
 
                 <v-card>
                   <v-treeview
                     v-model:selected="state.form.authorityIds"
+                    :rules="state.rules.authorityIds"
                     :items="propItems.roles"
                     selectable
                     select-strategy="independent"
@@ -249,7 +260,10 @@
                 </v-card>
               </v-menu>
             </v-col>
-            <v-col cols="12">
+            <v-col
+              cols="6"
+              class="d-flex"
+            >
               <div class="d-flex ga-4 justify-start align-center">
                 <v-avatar
                   v-if="state.form.headerImg"
@@ -270,6 +284,20 @@
                 />
               </div>
             </v-col>
+            <v-col cols="6">
+              <div>
+                {{ locale.t("enable") }}
+              </div>
+              <v-switch
+                v-model="state.form.enable"
+                hide-details
+                :true-value="1"
+                :false-value="2"
+                inset
+                class="switch-toggle"
+                density="compact"
+              />
+            </v-col>
           </v-row>
         </v-form>
       </v-card-text>
@@ -285,6 +313,7 @@
         <v-btn
           color="primary"
           density="comfortable"
+          :loading="state.loading"
           @click="onSubmit"
         >
           {{ locale.t(state.dialog.confirmText) }}
@@ -297,3 +326,9 @@
     />
   </v-dialog>
 </template>
+
+<style scoped lang="scss">
+  :deep(.switch-toggle .v-input__control .v-selection-control) {
+    min-height: 40px;
+  }
+</style>

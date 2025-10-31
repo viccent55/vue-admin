@@ -2,9 +2,14 @@
   import Table from "@/components/table/index.vue";
   import Dialog from "./dialog.vue";
   import useVariables from "@/composables/useVariables";
-  import { getUserList, deleteUser } from "@/service/admin/user";
+  import { getAppList } from "@/service/analytics/app";
+  import { getAdPositionList } from "@/service/analytics/adposition";
+  import {
+    getAppAdPositionList,
+    deleteAdvertisment,
+  } from "@/service/analytics/advertisment";
+
   import useSnackbar from "@/composables/useSnackbar";
-  import { roles } from "@/service/admin/role";
 
   const { locale } = useVariables();
   const snackbar = useSnackbar();
@@ -13,41 +18,56 @@
     table: {
       headers: [
         {
-          title: computed(() => locale.t("avatar")),
-          value: "headerImg",
-          key: "image",
-          sortable: false,
-        },
-        {
           title: computed(() => locale.t("id")),
-          key: "ID",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("username")),
-          key: "userName",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("phone")),
-          key: "phone",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("email")),
-          key: "email",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("enable")),
-          value: "enable",
-          key: "status",
+          value: "id",
           sortable: false,
         },
         {
-          title: computed(() => locale.t("userRole")),
-          value: "authorities",
-          key: "select",
+          title: computed(() => locale.t("image")),
+          value: "adPositionImage",
+          key: "image",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("applicationName")),
+          value: "appName",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("adpositionName")),
+          value: "positionName",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("link")),
+          value: "adPositionLink",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("status")),
+          value: "adPositionLink",
+          key: "statusOption",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("reviewBy")),
+          value: "reviewerName",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("totalClick")),
+          value: "clickTotal",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("monthlyClick")),
+          value: "clickMonthly",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("createDate")),
+          value: "CreatedAt",
+          key: "date",
           sortable: false,
           width: "200px",
         },
@@ -62,38 +82,56 @@
       total: 0,
       loading: false,
       config: {
-        email: "",
         keyword: "",
-        nickname: "",
         page: 1,
         pageSize: 10,
-        phone: "",
-        username: "",
+        appId: null,
+        adPositionId: null,
+        status: "",
       },
     },
-    roles: [],
+    applicationList: [] as EmptyArrayType,
+    advertismentList: [] as EmptyArrayType,
+    status: [
+      {
+        title: locale.t("all"),
+        value: "",
+      },
+      {
+        title: locale.t("pending"),
+        value: "0",
+      },
+      {
+        title: locale.t("reviewed"),
+        value: "1",
+      },
+      {
+        title: locale.t("rejected"),
+        value: "2",
+      },
+    ],
   });
 
-  const getRoles = async () => {
+  const initApp = async () => {
     try {
-      const res = await roles({});
-      state.roles = res.data ?? [];
-    } catch (e) {
-      console.log(e);
-    } finally {
-      // state.loading = false;
+      const [{ data: appRes }, { data: adRes }] = await Promise.all([
+        getAppList({ page: 1, pageSize: 1000 }),
+        getAdPositionList({ page: 1, pageSize: 1000 }),
+      ]);
+      state.applicationList = appRes?.list ?? [];
+      state.advertismentList = adRes?.list ?? [];
+    } catch (err) {
+      console.error("Failed to load init data:", err);
     }
   };
-
   const getDataTable = async () => {
     state.table.loading = true;
     try {
-      const res = await getUserList(state.table.config);
+      const res = await getAppAdPositionList(state.table.config);
       state.table.items =
         res.data.list.map((item: EmptyObjectType) => ({
           ...item,
-          image: item.headerImg,
-          status: item.enable,
+          image: item.adPositionImage,
         })) ?? [];
       state.table.total = res.data.total;
     } catch (e) {
@@ -109,14 +147,11 @@
     getDataTable();
   };
 
-  const openDialog = (key: string, item: EmptyObjectType = {}) => {
-    dialogRef.value.open(key, item);
-  };
   const onDelete = async (item: EmptyObjectType) => {
     const request = {
-      id: item.ID,
+      id: item.id,
     };
-    const res = await deleteUser(request);
+    const res = await deleteAdvertisment(request);
     if (res.code === 0) {
       getDataTable();
       snackbar.showSnackbar(locale.t("deleteSuccess"), "success", "top");
@@ -130,27 +165,24 @@
   };
   const resetQuery = () => {
     state.table.config = {
-      email: "",
       keyword: "",
-      nickname: "",
       page: 1,
       pageSize: 10,
-      phone: "",
-      username: "",
+      appId: null,
+      adPositionId: null,
+      status: "",
     };
     getDataTable();
   };
   const onSystem = (key: string, item: EmptyObjectType) => {
-    if (key === "add") {
-      openDialog(key);
-    } else if (key === "edit") {
-      openDialog(key, item);
+    if (key === "add" || key === "edit") {
+      dialogRef.value.open(key, item);
     } else if (key === "delete") {
       onDelete(item);
     }
   };
   onMounted(() => {
-    getRoles();
+    initApp();
     getDataTable();
   });
 </script>
@@ -167,12 +199,15 @@
           md="4"
           lg="2"
         >
-          <v-text-field
-            v-model="state.table.config.username"
+          <v-select
+            v-model="state.table.config.appId"
+            :items="state.applicationList"
+            item-title="name"
+            item-value="id"
             hide-details="auto"
             density="compact"
             clearable
-            :label="locale.t('username')"
+            :label="locale.t('applicationName')"
           />
         </v-col>
         <v-col
@@ -181,25 +216,14 @@
           md="4"
           lg="2"
         >
-          <v-text-field
-            v-model="state.table.config.nickname"
+          <v-select
+            v-model="state.table.config.adPositionId"
+            :items="state.advertismentList"
+            item-title="positionName"
+            item-value="ID"
             hide-details="auto"
             density="compact"
-            :label="locale.t('nickName')"
-            clearable
-          />
-        </v-col>
-        <v-col
-          cols="6"
-          sm="6"
-          md="4"
-          lg="2"
-        >
-          <v-text-field
-            v-model="state.table.config.phone"
-            hide-details="auto"
-            density="compact"
-            :label="locale.t('phone')"
+            :label="locale.t('adpositionName')"
             clearable
           />
         </v-col>
@@ -209,11 +233,14 @@
           md="4"
           lg="2"
         >
-          <v-text-field
-            v-model="state.table.config.email"
-            :label="locale.t('email')"
+          <v-select
+            v-model="state.table.config.status"
+            :items="state.status"
+            item-title="title"
+            item-value="value"
             hide-details="auto"
             density="compact"
+            :label="locale.t('status')"
             clearable
           />
         </v-col>
@@ -247,15 +274,14 @@
     </v-form>
     <Table
       v-bind="state.table"
-      :title="locale.t('usersManagement')"
-      @update:options="onUpdate"
+      :title="locale.t('advertismentManagement')"
       @system="onSystem"
+      @update:options="onUpdate"
       @permission="openMenuPermission"
     />
     <Dialog
       ref="dialogRef"
       :items="state.table.items"
-      :roles="state.roles"
       @refresh="getDataTable"
     />
   </v-container>

@@ -3,7 +3,7 @@
   import Dialog from "./dialog.vue";
   import DialogPermission from "./DialogPermission.vue";
   import useVariables from "@/composables/useVariables";
-  import { roles, deleteItem } from "@/service/role";
+  import { roles, deleteItem } from "@/service/admin/role";
   import useSnackbar from "@/composables/useSnackbar";
 
   const { locale } = useVariables();

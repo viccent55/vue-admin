@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import useVariables from "@/composables/useVariables";
-  import { create, update } from "@/service/admin/role";
+  import { createApp, updateApp } from "@/service/analytics/app";
   import useSnackbar from "@/composables/useSnackbar";
-  import TreeSelect from "@/components/role/TreeSelect.vue";
+  import { reactive } from "vue";
+  import ImageUploader from "@/components/ImageUploader.vue";
 
-  const props = defineProps({
-    items: {
+  const propItems = defineProps({
+    roles: {
       type: Array,
       default: () => [],
     },
@@ -20,65 +21,42 @@
       confirmText: "submit",
     },
     form: {
-      parentId: null,
-      authorityId: 0,
-      authorityName: "",
+      identifier: "",
+      logo: "",
+      name: "",
+      promoteLink: "",
     },
     rules: {
-      authorityName: [(v: string) => !!v || locale.t("fieldIsRequired")],
-      authorityId: [
-        (v: string) => !!v || locale.t("fieldIsRequired"),
-        (v: string) => /^\d+$/.test(v) || locale.t("mustBeANumber"),
-      ],
+      identifier: [(v: string) => !!v || locale.t("fieldIsRequired")],
+      logo: [(v: string) => !!v || locale.t("fieldIsRequired")],
+      promoteLink: [(v: string) => !!v || locale.t("fieldIsRequired")],
+      name: [(v: string) => !!v || locale.t("fieldIsRequired")],
     },
     loading: false,
-    parentItem: {
-      authorityId: 0,
-      authorityName: "",
-    },
+    visible: false,
   });
   const { locale, mobile } = useVariables();
   const snackbar = useSnackbar();
   const form = ref();
   const emit = defineEmits(["refresh"]);
-
-  const open = (key: string, item: EmptyObjectType) => {
-    state.dialog.isShowDialog = true;
-    state.dialog.key = key;
-
-    if (key == "add") {
-      nextTick(() => {
-        form.value.reset();
-        state.form.parentId = null;
-      });
-    } else if (key == "edit") {
-      state.form.authorityId = item.authorityId;
-      state.form.authorityName = item.authorityName;
-      state.form.parentId = item.parentId;
-    }
-  };
-
   const closeDialog = () => {
     state.dialog.isShowDialog = false;
-    emit("refresh");
+    state.form.logo = "";
+    form.value.reset();
   };
   const onSubmit = async () => {
     const { valid } = await form.value.validate();
     if (!valid) return;
     try {
       state.loading = true;
-      const request = {
-        parentId: state.form.parentId || 0,
-        authorityId: state.form.authorityId,
-        authorityName: state.form.authorityName,
-      };
       const response =
         state.dialog.key == "add"
-          ? await create(request)
-          : await update(request);
+          ? await createApp(state.form)
+          : await updateApp(state.form);
       if (response.code == 0) {
-        snackbar.showSnackbar(locale.t("createSuccess", "success", "top"));
-        closeDialog();
+        snackbar.showSnackbar(locale.t("saveSuccess"), "success", "top");
+        state.dialog.isShowDialog = false;
+        emit("refresh");
       } else {
         snackbar.showSnackbar(response.msg, "error", "top");
       }
@@ -89,9 +67,18 @@
       state.loading = false;
     }
   };
-
+  const imageUploader = ref();
+  const onOpenUpload = () => {
+    imageUploader.value.openDialog();
+  };
   defineExpose({
-    open,
+    open: (key: string, item: EmptyObjectType) => {
+      state.dialog.isShowDialog = true;
+      state.dialog.key = key;
+      if (key == "edit") {
+        Object.assign(state.form, item);
+      }
+    },
   });
 </script>
 <template>
@@ -100,6 +87,7 @@
     scrollable
     max-width="750px"
     :fullscreen="mobile"
+    @after-leave="closeDialog"
   >
     <v-card
       flat
@@ -121,23 +109,13 @@
           <v-row dense>
             <v-col cols="12">
               <div>
-                {{ locale.t("parent") }}
-              </div>
-              <!-- {{ state.form.parentId }} -->
-              <TreeSelect
-                v-model:model-value="state.form.parentId"
-                :items="props.items"
-              />
-            </v-col>
-            <v-col cols="12">
-              <div>
                 <span class="text-error">*</span>
-                {{ locale.t("authorityId") }}
+                {{ locale.t("applicationName") }}
               </div>
               <v-text-field
-                v-model.number="state.form.authorityId"
-                :rules="state.rules.authorityId"
-                :disabled="state.dialog.key == 'edit'"
+                v-model="state.form.name"
+                :rules="state.rules.name"
+                :placeholder="locale.t('username')"
                 variant="outlined"
                 density="compact"
               />
@@ -145,14 +123,50 @@
             <v-col cols="12">
               <div>
                 <span class="text-error">*</span>
-                {{ locale.t("authorityName") }}
+                {{ locale.t("applicationIdentifier") }}
               </div>
               <v-text-field
-                v-model="state.form.authorityName"
-                :rules="state.rules.authorityName"
+                v-model="state.form.identifier"
+                :rules="state.rules.name"
+                :placeholder="locale.t('applicationIdentifier')"
                 variant="outlined"
                 density="compact"
               />
+            </v-col>
+            <v-col cols="12">
+              <div>
+                <span class="text-error">*</span>
+                {{ locale.t("promoteLink") }}
+              </div>
+              <v-text-field
+                v-model.number="state.form.promoteLink"
+                :rules="state.rules.promoteLink"
+                :placeholder="locale.t('promoteLink')"
+                variant="outlined"
+                density="compact"
+              />
+            </v-col>
+
+            <v-col cols="12">
+              <div class="d-flex ga-4 justify-start align-center">
+                <v-avatar
+                  v-if="state.form.logo"
+                  size="80"
+                >
+                  <v-img
+                    :src="state.form.logo"
+                    :lazy-src="state.form.logo"
+                  />
+                </v-avatar>
+                <v-btn
+                  color="secondary"
+                  prepend-icon="mdi-image"
+                  rounded="none"
+                  :text="locale.t('uploadImage')"
+                  class="text-capitalize"
+                  @click="onOpenUpload"
+                />
+              </div>
             </v-col>
           </v-row>
         </v-form>
@@ -176,5 +190,9 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <ImageUploader
+      ref="imageUploader"
+      v-model:model-value="state.form.logo"
+    />
   </v-dialog>
 </template>

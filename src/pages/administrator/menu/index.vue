@@ -2,7 +2,7 @@
   import Dialog from "./dialog.vue";
   import Table from "@/components/table/index.vue";
   import useVariables from "@/composables/useVariables";
-  import { menus } from "@/service/menu";
+  import { menus } from "@/service/admin/menu";
 
   const state = reactive({
     headers: [

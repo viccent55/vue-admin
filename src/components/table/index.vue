@@ -1,8 +1,7 @@
 <script setup lang="ts">
   import { ref, computed, watch, type PropType } from "vue";
   import useVariables from "@/composables/useVariables";
-
-  const { locale } = useVariables();
+  import moment from "moment";
 
   const props = defineProps({
     headers: { type: Array as PropType<any[]>, required: true },
@@ -22,13 +21,8 @@
     optionAction: { type: Boolean, default: false },
   });
 
-  const emit = defineEmits([
-    "add",
-    "edit",
-    "delete",
-    "update:options",
-    "selected",
-  ]);
+  const { locale } = useVariables();
+  const emit = defineEmits(["option", "selected", "system", "update:options"]);
 
   const searchQuery = ref(props.config.search || "");
   const selected = ref<any[]>([]);
@@ -69,7 +63,8 @@
     dialogDelete.value?.open("areYouSure", item);
   };
 
-  const onDelete = (item: Record<string, any>) => emit("delete", item);
+  const onDelete = (item: Record<string, any>) =>
+    emit("system", "delete", item);
   const onCancel = () => {};
 </script>
 
@@ -103,7 +98,7 @@
         variant="flat"
         color="success"
         prepend-icon="mdi-plus"
-        @click="emit('add')"
+        @click="emit('system', 'add')"
       >
         Add
       </v-btn>
@@ -143,20 +138,55 @@
         />
       </template>
       <template #item.image="{ item }">
-        <v-avatar size="60px">
-          <v-img :src="item.headerImg" />
+        <v-avatar
+          class="my-2"
+          size="60px"
+          rounded="lg"
+        >
+          <v-img
+            :src="item.image"
+            :lazy-src="item.image"
+          />
         </v-avatar>
       </template>
-      <template #item.enable="{ item }">
+      <template #item.status="{ item }">
         <v-chip
           rounded
           flat
-          :color="item.enable ? 'success' : 'error'"
-          append-icon="mdi-check-circle"
+          :color="item.status == 1 ? 'success' : 'error'"
+          :append-icon="
+            item.status == 1 ? 'mdi-check-circle' : 'mdi-close-circle'
+          "
         >
-          {{ item.enable ? locale.t("enable") : locale.t("disable") }}
+          {{ item.status == 1 ? locale.t("enable") : locale.t("disable") }}
         </v-chip>
       </template>
+      <template #item.statusOption="{ item }">
+        <v-chip
+          rounded
+          flat
+          :color="
+            item.status == 1
+              ? 'success'
+              : item.stauts == 2
+                ? 'warning'
+                : 'error'
+          "
+        >
+          {{
+            item.status == 1
+              ? locale.t("reviewed")
+              : item.status == 2
+                ? locale.t("pending")
+                : locale.t("rejected")
+          }}
+        </v-chip>
+      </template>
+      <!-- Date -->
+      <template #item.date="{ item }">
+        {{ moment(item.CreatedAt).format("DD/MM/YYYY ") }}
+      </template>
+
       <template #item.select="{ item }">
         <v-group-chip
           style="width: 250px"
@@ -176,11 +206,19 @@
       <!-- Actions -->
       <template #item.actions="{ item }">
         <v-btn
+          v-if="item.option"
+          icon="mdi-cog"
+          size="small"
+          color="secondary"
+          variant="text"
+          @click="emit('system', 'option', item)"
+        />
+        <v-btn
           icon="mdi-pencil"
           size="small"
           color="warning"
           variant="text"
-          @click="emit('edit', item)"
+          @click="emit('system', 'edit', item)"
         />
         <v-btn
           icon="mdi-delete"

@@ -1,10 +1,13 @@
 <script setup lang="ts">
   import useVariables from "@/composables/useVariables";
   import useSnackbar from "@/composables/useSnackbar";
-  import { getMenuAuthority, setDataAuthority } from "@/service/authority";
-  import { getAllApis } from "@/service/sysapi";
+  import {
+    getMenuAuthority,
+    setDataAuthority,
+  } from "@/service/admin/authority";
+  import { getAllApis } from "@/service/admin/sysapi";
   import { getPolicyPathByAuthorityId, updateCasbin } from "@/service/casbin";
-  import { getBaseMenuTree, addMenu } from "@/service/menu";
+  import { getBaseMenuTree, addMenu } from "@/service/admin/menu";
 
   import TreeSelect from "@/components/TreeSelect.vue";
   import { apisToTree, flattenArray } from "@/hooks/helper";
@@ -286,6 +289,7 @@
           <v-btn
             color="primary"
             variant="elevated"
+            :loading="state.loading"
             @click="onSubmit"
           >
             {{ locale.t(state.dialog.confirmText) }}

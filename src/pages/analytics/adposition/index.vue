@@ -2,9 +2,11 @@
   import Table from "@/components/table/index.vue";
   import Dialog from "./dialog.vue";
   import useVariables from "@/composables/useVariables";
-  import { getUserList, deleteUser } from "@/service/admin/user";
+  import {
+    getAdPositionList,
+    deleteAdPosition,
+  } from "@/service/analytics/adposition";
   import useSnackbar from "@/composables/useSnackbar";
-  import { roles } from "@/service/admin/role";
 
   const { locale } = useVariables();
   const snackbar = useSnackbar();
@@ -13,41 +15,31 @@
     table: {
       headers: [
         {
-          title: computed(() => locale.t("avatar")),
-          value: "headerImg",
-          key: "image",
-          sortable: false,
-        },
-        {
           title: computed(() => locale.t("id")),
-          key: "ID",
+          value: "ID",
           sortable: true,
         },
         {
-          title: computed(() => locale.t("username")),
-          key: "userName",
+          title: computed(() => locale.t("locationName")),
+          value: "positionName",
           sortable: true,
         },
         {
-          title: computed(() => locale.t("phone")),
-          key: "phone",
+          title: computed(() => locale.t("locationMaker")),
+          value: "positionKey",
           sortable: true,
         },
+
         {
-          title: computed(() => locale.t("email")),
-          key: "email",
+          title: computed(() => locale.t("promoteLink")),
+          value: "promoteLink",
           sortable: true,
         },
+
         {
-          title: computed(() => locale.t("enable")),
-          value: "enable",
-          key: "status",
-          sortable: false,
-        },
-        {
-          title: computed(() => locale.t("userRole")),
-          value: "authorities",
-          key: "select",
+          title: computed(() => locale.t("createDate")),
+          value: "CreatedAt",
+          key: "date",
           sortable: false,
           width: "200px",
         },
@@ -62,38 +54,23 @@
       total: 0,
       loading: false,
       config: {
-        email: "",
-        keyword: "",
-        nickname: "",
         page: 1,
         pageSize: 10,
-        phone: "",
-        username: "",
+        keyword: "",
+        positionName: "",
+        positionKey: "",
       },
     },
-    roles: [],
   });
-
-  const getRoles = async () => {
-    try {
-      const res = await roles({});
-      state.roles = res.data ?? [];
-    } catch (e) {
-      console.log(e);
-    } finally {
-      // state.loading = false;
-    }
-  };
 
   const getDataTable = async () => {
     state.table.loading = true;
     try {
-      const res = await getUserList(state.table.config);
+      const res = await getAdPositionList(state.table.config);
       state.table.items =
         res.data.list.map((item: EmptyObjectType) => ({
           ...item,
-          image: item.headerImg,
-          status: item.enable,
+          image: item.logo,
         })) ?? [];
       state.table.total = res.data.total;
     } catch (e) {
@@ -109,14 +86,11 @@
     getDataTable();
   };
 
-  const openDialog = (key: string, item: EmptyObjectType = {}) => {
-    dialogRef.value.open(key, item);
-  };
   const onDelete = async (item: EmptyObjectType) => {
     const request = {
       id: item.ID,
     };
-    const res = await deleteUser(request);
+    const res = await deleteAdPosition(request);
     if (res.code === 0) {
       getDataTable();
       snackbar.showSnackbar(locale.t("deleteSuccess"), "success", "top");
@@ -130,27 +104,24 @@
   };
   const resetQuery = () => {
     state.table.config = {
-      email: "",
+      name: "",
       keyword: "",
-      nickname: "",
+      identifier: "",
       page: 1,
       pageSize: 10,
-      phone: "",
-      username: "",
+      startCreatedAt: "",
+      updatedAt: "",
     };
     getDataTable();
   };
   const onSystem = (key: string, item: EmptyObjectType) => {
-    if (key === "add") {
-      openDialog(key);
-    } else if (key === "edit") {
-      openDialog(key, item);
+    if (key === "add" || key === "edit") {
+      dialogRef.value.open(key, item);
     } else if (key === "delete") {
       onDelete(item);
     }
   };
   onMounted(() => {
-    getRoles();
     getDataTable();
   });
 </script>
@@ -168,11 +139,11 @@
           lg="2"
         >
           <v-text-field
-            v-model="state.table.config.username"
+            v-model="state.table.config.positionName"
             hide-details="auto"
             density="compact"
             clearable
-            :label="locale.t('username')"
+            :label="locale.t('positionName')"
           />
         </v-col>
         <v-col
@@ -182,38 +153,10 @@
           lg="2"
         >
           <v-text-field
-            v-model="state.table.config.nickname"
+            v-model="state.table.config.positionKey"
             hide-details="auto"
             density="compact"
-            :label="locale.t('nickName')"
-            clearable
-          />
-        </v-col>
-        <v-col
-          cols="6"
-          sm="6"
-          md="4"
-          lg="2"
-        >
-          <v-text-field
-            v-model="state.table.config.phone"
-            hide-details="auto"
-            density="compact"
-            :label="locale.t('phone')"
-            clearable
-          />
-        </v-col>
-        <v-col
-          cols="6"
-          sm="6"
-          md="4"
-          lg="2"
-        >
-          <v-text-field
-            v-model="state.table.config.email"
-            :label="locale.t('email')"
-            hide-details="auto"
-            density="compact"
+            :label="locale.t('positionKey')"
             clearable
           />
         </v-col>
@@ -247,15 +190,14 @@
     </v-form>
     <Table
       v-bind="state.table"
-      :title="locale.t('usersManagement')"
-      @update:options="onUpdate"
+      :title="locale.t('adpositionManagement')"
       @system="onSystem"
+      @update:options="onUpdate"
       @permission="openMenuPermission"
     />
     <Dialog
       ref="dialogRef"
       :items="state.table.items"
-      :roles="state.roles"
       @refresh="getDataTable"
     />
   </v-container>

@@ -11,7 +11,6 @@ export function updateUser(param: object): Promise<EmptyObjectType> {
   return requst.put("/user/setUserInfo", param);
 }
 
-// get menus
-export function deleteItem(param: object): Promise<EmptyObjectType> {
-  return requst.post("/base/login", param);
+export function deleteUser(param: object): Promise<EmptyObjectType> {
+  return requst.delete("/user/deleteUser", { data: param });
 }

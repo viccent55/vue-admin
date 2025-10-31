@@ -2,55 +2,45 @@
   import Table from "@/components/table/index.vue";
   import Dialog from "./dialog.vue";
   import useVariables from "@/composables/useVariables";
-  import { getUserList, deleteUser } from "@/service/admin/user";
+  import { getChannelList, deleteChannel } from "@/service/analytics/channel";
   import useSnackbar from "@/composables/useSnackbar";
-  import { roles } from "@/service/admin/role";
+  import AppDialog from "./AppDialog.vue";
 
   const { locale } = useVariables();
   const snackbar = useSnackbar();
-
   const state = reactive({
     table: {
       headers: [
         {
-          title: computed(() => locale.t("avatar")),
-          value: "headerImg",
-          key: "image",
-          sortable: false,
-        },
-        {
-          title: computed(() => locale.t("id")),
-          key: "ID",
+          title: computed(() => locale.t("accountName")),
+          value: "account",
           sortable: true,
         },
         {
-          title: computed(() => locale.t("username")),
-          key: "userName",
+          title: computed(() => locale.t("channelName")),
+          value: "name",
+          sortable: true,
+        },
+
+        {
+          title: computed(() => locale.t("promotionType")),
+          value: "channelType",
           sortable: true,
         },
         {
-          title: computed(() => locale.t("phone")),
-          key: "phone",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("email")),
-          key: "email",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("enable")),
-          value: "enable",
+          title: computed(() => locale.t("status")),
+          value: "status",
           key: "status",
-          sortable: false,
-        },
-        {
-          title: computed(() => locale.t("userRole")),
-          value: "authorities",
-          key: "select",
           sortable: false,
           width: "200px",
         },
+        {
+          title: computed(() => locale.t("remark")),
+          value: "remark",
+          sortable: false,
+          width: "200px",
+        },
+
         {
           title: computed(() => locale.t("action")),
           key: "actions",
@@ -62,38 +52,27 @@
       total: 0,
       loading: false,
       config: {
-        email: "",
         keyword: "",
-        nickname: "",
         page: 1,
         pageSize: 10,
-        phone: "",
-        username: "",
+        name: "",
+        status: "",
+        channelType: "",
+        account: "",
       },
     },
-    roles: [],
+    promotionTypes: ["CPA", "CPC", "CPM", "CPT", "CPS"],
   });
-
-  const getRoles = async () => {
-    try {
-      const res = await roles({});
-      state.roles = res.data ?? [];
-    } catch (e) {
-      console.log(e);
-    } finally {
-      // state.loading = false;
-    }
-  };
 
   const getDataTable = async () => {
     state.table.loading = true;
     try {
-      const res = await getUserList(state.table.config);
+      const res = await getChannelList(state.table.config);
       state.table.items =
         res.data.list.map((item: EmptyObjectType) => ({
           ...item,
-          image: item.headerImg,
-          status: item.enable,
+          image: item.logo,
+          option: true,
         })) ?? [];
       state.table.total = res.data.total;
     } catch (e) {
@@ -109,14 +88,11 @@
     getDataTable();
   };
 
-  const openDialog = (key: string, item: EmptyObjectType = {}) => {
-    dialogRef.value.open(key, item);
-  };
   const onDelete = async (item: EmptyObjectType) => {
     const request = {
-      id: item.ID,
+      id: item.id,
     };
-    const res = await deleteUser(request);
+    const res = await deleteChannel(request);
     if (res.code === 0) {
       getDataTable();
       snackbar.showSnackbar(locale.t("deleteSuccess"), "success", "top");
@@ -130,27 +106,27 @@
   };
   const resetQuery = () => {
     state.table.config = {
-      email: "",
       keyword: "",
-      nickname: "",
       page: 1,
       pageSize: 10,
-      phone: "",
-      username: "",
+      name: "",
+      status: "",
+      channelType: "",
+      account: "",
     };
     getDataTable();
   };
+  const appDialogRef = ref();
   const onSystem = (key: string, item: EmptyObjectType) => {
-    if (key === "add") {
-      openDialog(key);
-    } else if (key === "edit") {
-      openDialog(key, item);
+    if (key === "add" || key === "edit") {
+      dialogRef.value.open(key, item);
     } else if (key === "delete") {
       onDelete(item);
+    } else if (key === "option") {
+      appDialogRef.value.open(item);
     }
   };
   onMounted(() => {
-    getRoles();
     getDataTable();
   });
 </script>
@@ -168,24 +144,10 @@
           lg="2"
         >
           <v-text-field
-            v-model="state.table.config.username"
+            v-model="state.table.config.account"
             hide-details="auto"
             density="compact"
-            clearable
-            :label="locale.t('username')"
-          />
-        </v-col>
-        <v-col
-          cols="6"
-          sm="6"
-          md="4"
-          lg="2"
-        >
-          <v-text-field
-            v-model="state.table.config.nickname"
-            hide-details="auto"
-            density="compact"
-            :label="locale.t('nickName')"
+            :label="locale.t('channelAccount')"
             clearable
           />
         </v-col>
@@ -196,10 +158,10 @@
           lg="2"
         >
           <v-text-field
-            v-model="state.table.config.phone"
+            v-model="state.table.config.name"
             hide-details="auto"
             density="compact"
-            :label="locale.t('phone')"
+            :label="locale.t('channelName')"
             clearable
           />
         </v-col>
@@ -209,9 +171,37 @@
           md="4"
           lg="2"
         >
-          <v-text-field
-            v-model="state.table.config.email"
-            :label="locale.t('email')"
+          <v-select
+            v-model="state.table.config.channelType"
+            :items="state.promotionTypes"
+            :label="locale.t('promotionType')"
+            :placeholder="locale.t('promotionType')"
+            hide-details="auto"
+            density="compact"
+            clearable
+          />
+        </v-col>
+        <v-col
+          cols="6"
+          sm="6"
+          md="4"
+          lg="2"
+        >
+          <v-select
+            v-model="state.table.config.status"
+            :items="[
+              {
+                title: locale.t('enable'),
+                value: 1,
+              },
+              {
+                title: locale.t('disable'),
+                value: 0,
+              },
+            ]"
+            :label="locale.t('status')"
+            item-title="title"
+            item-value="value"
             hide-details="auto"
             density="compact"
             clearable
@@ -247,15 +237,19 @@
     </v-form>
     <Table
       v-bind="state.table"
-      :title="locale.t('usersManagement')"
-      @update:options="onUpdate"
+      :title="locale.t('channelManagement')"
       @system="onSystem"
+      @update:options="onUpdate"
       @permission="openMenuPermission"
     />
+
     <Dialog
       ref="dialogRef"
-      :items="state.table.items"
-      :roles="state.roles"
+      :types="state.promotionTypes"
+      @refresh="getDataTable"
+    />
+    <AppDialog
+      ref="appDialogRef"
       @refresh="getDataTable"
     />
   </v-container>

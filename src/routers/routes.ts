@@ -44,6 +44,57 @@ const adminRoutes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "/analytics",
+        name: "analytics",
+        component: () => import("@/pages/analytics/index.vue"),
+        redirect: "/analytics/app",
+        meta: {
+          title: "dataAnalysis",
+          isKeepAlive: true,
+          roles: ["admin", "common"],
+          icon: "mdi-chart-box",
+        },
+        children: [
+          {
+            path: "/analytics/app",
+            name: "applicationManagement",
+            component: () => import("@/pages/analytics/app/index.vue"),
+            meta: {
+              title: "applicationManagement",
+              isKeepAlive: true,
+            },
+          },
+          {
+            path: "/analytics/channel",
+            name: "channel",
+            component: () => import("@/pages/analytics/channel/index.vue"),
+            meta: {
+              title: "channel",
+              isKeepAlive: true,
+            },
+          },
+          {
+            path: "/analytics/adposition",
+            name: "adposition",
+            component: () => import("@/pages/analytics/adposition/index.vue"),
+            meta: {
+              title: "adposition",
+              isKeepAlive: true,
+            },
+          },
+          {
+            path: "/analytics/advertisement",
+            name: "advitisment",
+            component: () =>
+              import("@/pages/analytics/advertisement/index.vue"),
+            meta: {
+              title: "advertisement",
+              isKeepAlive: true,
+            },
+          },
+        ],
+      },
+      {
         path: "/administrator",
         name: "admin",
         component: () => import("@/pages/administrator/index.vue"),
@@ -74,7 +125,7 @@ const adminRoutes: Array<RouteRecordRaw> = [
           //   },
           // },
           {
-            path: "/user",
+            path: "/administrator/user",
             name: "/administrator/user",
             component: () => import("@/pages/administrator/user/index.vue"),
             meta: {
