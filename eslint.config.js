@@ -25,6 +25,13 @@ export default defineFlatConfigs(
       '@typescript-eslint/no-explicit-any': 'off',
        'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      'vue/v-slot-style': 'off',
+      'vue/html-self-closing': [
+        'error',
+        {
+          html: { component: 'any' },
+        },
+      ],
 
     },
   },
