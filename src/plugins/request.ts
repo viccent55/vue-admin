@@ -36,9 +36,9 @@ service.interceptors.response.use(
     const res = response.data;
     if (res.code && res.code !== 0) {
       // `token` Expired or the account has been logged in elsewhere
-      if (res.code === 401 || res.code === 4001) {
+      if (res.code === 401) {
         Session.clear(); // Clear all temporary browser caches
-        window.location.href = "/";
+        window.location.reload();
         Notify.error("登录状态已过期，请重新登录");
       }
       return res;
@@ -53,6 +53,12 @@ service.interceptors.response.use(
     } else if (error.message == "Network Error") {
       Notify.error("网络连接错误");
     } else {
+      if (error.status === 401) {
+        Session.clear(); // Clear all temporary browser caches
+        window.location.reload();
+        Notify.error("登录状态已过期，请重新登录");
+      }
+
       if (error.response?.data) Notify.info(error.response.statusText);
       else Notify.error("接口路径找不到");
     }

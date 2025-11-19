@@ -1,3 +1,4 @@
+import { roles } from "@/service/admin/role";
 import type { RouteRecordRaw } from "vue-router";
 
 const staticRoutes: Array<RouteRecordRaw> = [
@@ -44,6 +45,31 @@ const adminRoutes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "/application",
+        name: "applicationManagement",
+        component: () => import("@/pages/application-management/index.vue"),
+        meta: {
+          title: "applicationManagement",
+          isKeepAlive: true,
+          roles: ["admin", "common"],
+          icon: "mdi-monitor",
+        },
+        children: [
+          {
+            path: "/application/product",
+            name: "product",
+            component: () =>
+              import("@/pages/application-management/product/index.vue"),
+            meta: {
+              title: "product",
+              isKeepAlive: true,
+              roles: ["admin", "common"],
+              icon: "mdi-list-box-outline",
+            },
+          },
+        ],
+      },
+      {
         path: "/analytics",
         name: "analytics",
         component: () => import("@/pages/analytics/index.vue"),
@@ -55,15 +81,6 @@ const adminRoutes: Array<RouteRecordRaw> = [
           icon: "mdi-chart-box",
         },
         children: [
-          {
-            path: "/analytics/app",
-            name: "applicationManagement",
-            component: () => import("@/pages/analytics/app/index.vue"),
-            meta: {
-              title: "applicationManagement",
-              isKeepAlive: true,
-            },
-          },
           {
             path: "/analytics/channel",
             name: "channel",

@@ -19,13 +19,22 @@
       default: () => [10, 25, 50, 100],
     },
     optionAction: { type: Boolean, default: false },
+    actionOption: {
+      type: Array as PropType<EmptyArrayType>,
+      default: () => [
+        {
+          icon: "mdi-cog",
+          name: "settings",
+        },
+      ],
+    },
   });
 
   const { locale } = useVariables();
   const emit = defineEmits(["option", "selected", "system", "update:options"]);
 
   const searchQuery = ref(props.config.search || "");
-  const selected = ref<any[]>([]);
+  const selected = ref([]);
 
   const options = ref({
     page: 1,
@@ -81,6 +90,16 @@
       <v-spacer />
 
       <!-- Search -->
+      <v-btn
+        v-if="props.showSelect && selected.length > 0"
+        variant="flat"
+        color="error"
+        class="mr-3"
+        prepend-icon="mdi-delete"
+        @click="emit('system', 'delete-selected')"
+      >
+        {{ locale.t("deleteSelected") }}
+      </v-btn>
       <v-text-field
         v-model="searchQuery"
         density="compact"
@@ -100,7 +119,7 @@
         prepend-icon="mdi-plus"
         @click="emit('system', 'add')"
       >
-        Add
+        {{ locale.t("add") }}
       </v-btn>
     </v-toolbar>
 
@@ -113,7 +132,8 @@
       :loading="loading"
       :show-select="showSelect"
       class="elevation-0"
-      style="min-height: 70vh"
+      return-object
+      style="min-height: 60vh"
     >
       <!-- Select all checkbox -->
       <template
@@ -148,6 +168,12 @@
             :lazy-src="item.image"
           />
         </v-avatar>
+      </template>
+      <template #item.html="{ item }">
+        <div
+          class="clamped-html"
+          v-html="item.description"
+        />
       </template>
       <template #item.status="{ item }">
         <v-chip
@@ -206,12 +232,13 @@
       <!-- Actions -->
       <template #item.actions="{ item }">
         <v-btn
-          v-if="item.option"
-          icon="mdi-cog"
+          v-for="(option, index) in props.actionOption"
+          :key="index"
           size="small"
           color="secondary"
           variant="text"
-          @click="emit('system', 'option', item)"
+          :icon="option.icon || 'mdi-cog'"
+          @click="emit('system', 'option', option)"
         />
         <v-btn
           icon="mdi-pencil"
@@ -272,5 +299,17 @@
 <style scoped lang="scss">
   .page-size-select {
     max-width: 90px;
+  }
+  .clamped-html {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+
+    /* number of visible lines */
+    -webkit-line-clamp: 3;
+
+    overflow: hidden;
+
+    /* Adds the '...' */
+    text-overflow: ellipsis;
   }
 </style>

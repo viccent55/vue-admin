@@ -12,40 +12,25 @@
     table: {
       headers: [
         {
-          title: computed(() => locale.t("channelCode")),
-          value: "channelCode",
+          title: computed(() => locale.t("accountName")),
+          value: "account",
           sortable: true,
         },
         {
           title: computed(() => locale.t("channelName")),
-          value: "channelName",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("channelType")),
-          value: "channelType",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("commissionRate")),
-          value: "commissionRate",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("contactPerson")),
-          value: "contactPerson",
-          sortable: true,
-        },
-        {
-          title: computed(() => locale.t("contactPhone")),
-          value: "contactPhone",
+          value: "name",
           sortable: true,
         },
 
         {
-          title: computed(() => locale.t("description")),
-          value: "description",
-          key: "html",
+          title: computed(() => locale.t("promotionType")),
+          value: "channelType",
+          sortable: true,
+        },
+        {
+          title: computed(() => locale.t("status")),
+          value: "status",
+          key: "status",
           sortable: false,
           width: "200px",
         },
@@ -55,20 +40,7 @@
           sortable: false,
           width: "200px",
         },
-        {
-          title: computed(() => locale.t("status")),
-          value: "status",
-          key: "text",
-          sortable: false,
-          width: "200px",
-        },
-        {
-          title: computed(() => locale.t("createdAt")),
-          value: "CreatedAt",
-          key: "date",
-          sortable: false,
-          width: "200px",
-        },
+
         {
           title: computed(() => locale.t("action")),
           key: "actions",

@@ -86,6 +86,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/administrator/role/DialogPermission': RouteRecordInfo<
+      '/administrator/role/DialogPermission',
+      '/administrator/role/DialogPermission',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/administrator/user/': RouteRecordInfo<
       '/administrator/user/',
       '/administrator/user',
@@ -93,9 +100,121 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/administrator/user/menu1': RouteRecordInfo<
-      '/administrator/user/menu1',
-      '/administrator/user/menu1',
+    '/administrator/user/dialog': RouteRecordInfo<
+      '/administrator/user/dialog',
+      '/administrator/user/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/': RouteRecordInfo<
+      '/analytics/',
+      '/analytics',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/adposition/': RouteRecordInfo<
+      '/analytics/adposition/',
+      '/analytics/adposition',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/adposition/dialog': RouteRecordInfo<
+      '/analytics/adposition/dialog',
+      '/analytics/adposition/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/advertisement/': RouteRecordInfo<
+      '/analytics/advertisement/',
+      '/analytics/advertisement',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/advertisement/dialog': RouteRecordInfo<
+      '/analytics/advertisement/dialog',
+      '/analytics/advertisement/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/app/': RouteRecordInfo<
+      '/analytics/app/',
+      '/analytics/app',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/app/dialog': RouteRecordInfo<
+      '/analytics/app/dialog',
+      '/analytics/app/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/channel/': RouteRecordInfo<
+      '/analytics/channel/',
+      '/analytics/channel',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/channel/AppDialog': RouteRecordInfo<
+      '/analytics/channel/AppDialog',
+      '/analytics/channel/AppDialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/analytics/channel/dialog': RouteRecordInfo<
+      '/analytics/channel/dialog',
+      '/analytics/channel/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/': RouteRecordInfo<
+      '/application-management/',
+      '/application-management',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/channel/': RouteRecordInfo<
+      '/application-management/channel/',
+      '/application-management/channel',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/channel/AppDialog': RouteRecordInfo<
+      '/application-management/channel/AppDialog',
+      '/application-management/channel/AppDialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/channel/dialog': RouteRecordInfo<
+      '/application-management/channel/dialog',
+      '/application-management/channel/dialog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/product/': RouteRecordInfo<
+      '/application-management/product/',
+      '/application-management/product',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/application-management/product/dialog': RouteRecordInfo<
+      '/application-management/product/dialog',
+      '/application-management/product/dialog',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -195,15 +314,117 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/administrator/role/DialogPermission.vue': {
+      routes:
+        | '/administrator/role/DialogPermission'
+      views:
+        | never
+    }
     'src/pages/administrator/user/index.vue': {
       routes:
         | '/administrator/user/'
       views:
         | never
     }
-    'src/pages/administrator/user/menu1.vue': {
+    'src/pages/administrator/user/dialog.vue': {
       routes:
-        | '/administrator/user/menu1'
+        | '/administrator/user/dialog'
+      views:
+        | never
+    }
+    'src/pages/analytics/index.vue': {
+      routes:
+        | '/analytics/'
+      views:
+        | never
+    }
+    'src/pages/analytics/adposition/index.vue': {
+      routes:
+        | '/analytics/adposition/'
+      views:
+        | never
+    }
+    'src/pages/analytics/adposition/dialog.vue': {
+      routes:
+        | '/analytics/adposition/dialog'
+      views:
+        | never
+    }
+    'src/pages/analytics/advertisement/index.vue': {
+      routes:
+        | '/analytics/advertisement/'
+      views:
+        | never
+    }
+    'src/pages/analytics/advertisement/dialog.vue': {
+      routes:
+        | '/analytics/advertisement/dialog'
+      views:
+        | never
+    }
+    'src/pages/analytics/app/index.vue': {
+      routes:
+        | '/analytics/app/'
+      views:
+        | never
+    }
+    'src/pages/analytics/app/dialog.vue': {
+      routes:
+        | '/analytics/app/dialog'
+      views:
+        | never
+    }
+    'src/pages/analytics/channel/index.vue': {
+      routes:
+        | '/analytics/channel/'
+      views:
+        | never
+    }
+    'src/pages/analytics/channel/AppDialog.vue': {
+      routes:
+        | '/analytics/channel/AppDialog'
+      views:
+        | never
+    }
+    'src/pages/analytics/channel/dialog.vue': {
+      routes:
+        | '/analytics/channel/dialog'
+      views:
+        | never
+    }
+    'src/pages/application-management/index.vue': {
+      routes:
+        | '/application-management/'
+      views:
+        | never
+    }
+    'src/pages/application-management/channel/index.vue': {
+      routes:
+        | '/application-management/channel/'
+      views:
+        | never
+    }
+    'src/pages/application-management/channel/AppDialog.vue': {
+      routes:
+        | '/application-management/channel/AppDialog'
+      views:
+        | never
+    }
+    'src/pages/application-management/channel/dialog.vue': {
+      routes:
+        | '/application-management/channel/dialog'
+      views:
+        | never
+    }
+    'src/pages/application-management/product/index.vue': {
+      routes:
+        | '/application-management/product/'
+      views:
+        | never
+    }
+    'src/pages/application-management/product/dialog.vue': {
+      routes:
+        | '/application-management/product/dialog'
       views:
         | never
     }

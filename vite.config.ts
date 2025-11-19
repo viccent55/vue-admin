@@ -85,6 +85,11 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
+        "/uploads": {
+          target: `${env.VITE_API_URL}/uploads`,
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/uploads/, ""),
+        },
       },
       allowedHosts: true,
     },
